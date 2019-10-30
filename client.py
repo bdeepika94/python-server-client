@@ -1,67 +1,35 @@
 #!/usr/bin/env python3
 
 import socket
-
-import signal 
-
-
+import signal
 
 ips = [
-
     {
-
         'ip':"localhost",
-
         'port':1632
-
     },
-
     {
-
         'ip':"localhost",
-
         'port':1635
-
     }
-
 ]
 
-
-
-# def signal_handler(signum,frame):
-
-#     print("exitttt")
-
-#     exit(0)
-
-
-
-# signal.signal(signal.SIGINT,signal_handler)
-
-
-
 s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-
-
 a = ips.pop()
-
-print(a)
-
 ip = a['ip']
-
 port = a["port"]
-
 content=''
-
-Status = 0
 
 while True:
     try:
+        # Connect to server
         s.connect((ip,port))
+
+        #Asking user for file name
         f_name = input("Enter File name : ")
-        print(f_name)
         s.send(f_name.encode())
+
+        #Fetching file content
         content = ""
         tmp_read = s.recv(1024).decode()
         while "<<EOC>>" not in tmp_read:
@@ -69,9 +37,13 @@ while True:
             tmp_read = s.recv(1024).decode()
         print("[Info] Content in you file: ")
         print(content)
+
+        #Asking user for content
         content = input("Enter content : \n")
         content = content +"<<EOC>>"
         s.send(content.encode())
+
+        # Waiting for successfull write
         if s.recv(1024) ==b'OK':
             print("[+] Succesfully Saved")
         else:
